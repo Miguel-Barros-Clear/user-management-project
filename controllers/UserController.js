@@ -18,6 +18,7 @@ class UserController {
             let btn = this.formEl.querySelector("[type=submit]");
             btn.disabled = true;
             let values = this.getValues();
+            if (!values) return false;
 
             this.getPhoto().then((content) => {
                 values.photo = content;
@@ -113,6 +114,30 @@ class UserController {
         `
 
         tr.querySelector(".btn-edit").addEventListener("click", (e) => {
+            let json = JSON.parse(tr.dataset.user);
+            let form = document.querySelector("#form-user-update");
+            for (let name in json) {
+                let field = form.querySelector(`[name=${name.replace("_", "")}]`)
+                if (field) {
+                    switch (field.type) {
+                        case "file":
+                            continue;
+                            break;
+
+                        case "radio":
+                            field = form.querySelector(`[name=${name.replace("_", "")}]`);
+                            field.checked = true;
+                            break
+
+                        case "checkbox":
+                            field.checked = json[name];
+                            break
+
+                        default:
+                            field.value = json[name];
+                    }
+                }
+            }
             this.showPanelUpdate()
         })
 
