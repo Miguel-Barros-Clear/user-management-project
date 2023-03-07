@@ -37,7 +37,11 @@ class UserController {
                     result._photo = content;
                 }
 
-                tr.dataset.user = JSON.stringify(result);
+                let user = new User();
+                user.loadFromJSON(result);
+                
+                this.getTr(user, tr);
+
                 tr.innerHTML = `
                 <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
                 <td>${result._name}</td>
@@ -50,7 +54,6 @@ class UserController {
                 </td>
             `
 
-                this.addEventsTR(tr);
                 this.updateCount();
                 this.showPanelCreate();
             }, (err) => {
@@ -167,8 +170,14 @@ class UserController {
     }
 
     addLine(dataUser) {
+        let tr = this.getTr(dataUser);
 
-        let tr = document.createElement("tr");
+        this.tableEl.appendChild(tr);
+        this.updateCount();
+    }
+
+    getTr(dataUser, tr = null){
+        if (tr === null) return tr = document.createElement("tr");
 
         tr.dataset.user = JSON.stringify(dataUser);
 
@@ -183,11 +192,8 @@ class UserController {
                 <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
             </td>
         `
-
         this.addEventsTR(tr);
-
-        this.tableEl.appendChild(tr);
-        this.updateCount();
+        return tr;
     }
 
     addEventsTR(tr) {
